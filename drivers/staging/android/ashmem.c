@@ -281,7 +281,6 @@ static ssize_t ashmem_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 static loff_t ashmem_llseek(struct file *file, loff_t offset, int origin)
 {
 	struct ashmem_area *asma = file->private_data;
-	struct file *vmfile;
 	loff_t ret;
 
 	if (asma->size == 0)
