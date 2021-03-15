@@ -237,11 +237,11 @@ static int ashmem_open(struct inode *inode, struct file *file)
 	int ret;
 
 	ret = generic_file_open(inode, file);
-	if (unlikely(ret))
+	if (ret)
 		return ret;
 
-	asma = kmem_cache_zalloc(ashmem_area_cachep, GFP_KERNEL);
-	if (unlikely(!asma))
+	asma = kmem_cache_alloc(ashmem_area_cachep, GFP_KERNEL);
+	if (!asma)
 		return -ENOMEM;
 
 	INIT_LIST_HEAD(&asma->unpinned_list);
@@ -424,10 +424,53 @@ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
 			vmfile_fops = *vmfile->f_op;
 			vmfile_fops.mmap = ashmem_vmfile_mmap;
 			vmfile_fops.get_unmapped_area =
-					ashmem_vmfile_get_unmapped_area;
+				ashmem_vmfile_get_unmapped_area;
+			WRITE_ONCE(vmfile_fops.mmap, ashmem_vmfile_mmap);
 		}
-		vmfile->f_op = &vmfile_fops;
+		spin_unlock(&vmfile_fops_lock);
 	}
+	vmfile->f_op = &vmfile_fops;
+	vmfile->f_mode |= FMODE_LSEEK;
+
+	WRITE_ONCE(asma->file, vmfile);
+	return 0;
+}
+
+static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+{
+	struct ashmem_area *asma = file->private_data;
+	unsigned long prot_mask;
+	size_t size;
+
+	/* user needs to SET_SIZE before mapping */
+	size = READ_ONCE(asma->size);
+	if (!size)
+		return -EINVAL;
+
+	/* requested mapping size larger than object size */
+	if (vma->vm_end - vma->vm_start > PAGE_ALIGN(size))
+		return -EINVAL;
+
+	/* requested protection bits must match our allowed protection mask */
+	prot_mask = READ_ONCE(asma->prot_mask);
+	if ((vma->vm_flags & ~calc_vm_prot_bits(prot_mask) &
+		     calc_vm_prot_bits(PROT_MASK)))
+		return -EPERM;
+
+	vma->vm_flags &= ~calc_vm_may_flags(~prot_mask);
+
+	if (!READ_ONCE(asma->file)) {
+		int ret = 0;
+
+		mutex_lock(&asma->mmap_lock);
+		if (!asma->file)
+			ret = ashmem_file_setup(asma, size, vma);
+		mutex_unlock(&asma->mmap_lock);
+
+		if (ret)
+			return ret;
+	}
+
 	get_file(asma->file);
 
 	if (vma->vm_flags & VM_SHARED)
@@ -516,10 +559,8 @@ static int set_prot_mask(struct ashmem_area *asma, unsigned long prot)
 	mutex_lock(&ashmem_mutex);
 
 	/* the user can only remove, not add, protection bits */
-	if (unlikely((asma->prot_mask & prot) != prot)) {
-		ret = -EINVAL;
-		goto out;
-	}
+	if ((READ_ONCE(asma->prot_mask) & prot) != prot)
+		return -EINVAL;
 
 	/* does the application expect PROT_READ to imply PROT_EXEC? */
 	if ((prot & PROT_READ) && (current->personality & READ_IMPLIES_EXEC))
@@ -867,21 +908,14 @@ static int __init ashmem_init(void)
 	ashmem_area_cachep = kmem_cache_create("ashmem_area_cache",
 					       sizeof(struct ashmem_area),
 					       0, 0, NULL);
-	if (unlikely(!ashmem_area_cachep)) {
+	if (!ashmem_area_cachep) {
 		pr_err("failed to create slab cache\n");
-		return -ENOMEM;
-	}
-
-	ashmem_range_cachep = kmem_cache_create("ashmem_range_cache",
-						sizeof(struct ashmem_range),
-						0, 0, NULL);
-	if (unlikely(!ashmem_range_cachep)) {
-		pr_err("failed to create slab cache\n");
-		return -ENOMEM;
+		ret = -ENOMEM;
+		goto out;
 	}
 
 	ret = misc_register(&ashmem_misc);
-	if (unlikely(ret)) {
+	if (ret) {
 		pr_err("failed to register misc device!\n");
 		return ret;
 	}
