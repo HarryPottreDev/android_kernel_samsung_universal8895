@@ -108,6 +108,7 @@ static int abox_iommu_fault_handler(
 	struct abox_data *data = token;
 
 	abox_dbg_print_gpr(&data->pdev->dev, data);
+
 	return 0;
 }
 
@@ -133,6 +134,7 @@ static void exynos_abox_panic_handler(void)
 		has_run = true;
 
 		abox_dbg_dump_gpr(dev, data, ABOX_DBG_DUMP_KERNEL, "panic");
+
 		abox_cpu_pm_ipc(dev, false);
 		writel(0x504E4943, data->sram_base + 0x30FFC);
 		abox_cpu_enable(false);
@@ -140,7 +142,9 @@ static void exynos_abox_panic_handler(void)
 		abox_cpu_power(true);
 		abox_cpu_enable(true);
 		mdelay(100);
+
 		abox_dbg_dump_mem(dev, data, ABOX_DBG_DUMP_KERNEL, "panic");
+
 	} else {
 		dev_info(dev, "%s: dump is skipped due to no power\n",
 				__func__);
@@ -4328,9 +4332,7 @@ static irqreturn_t abox_irq_handler(int irq, void *dev_id)
 		}
 		break;
 	}
-
 	abox_log_schedule_flush_all(dev);
-
 	dev_dbg(dev, "%s: exit\n", __func__);
 	return ret;
 }
