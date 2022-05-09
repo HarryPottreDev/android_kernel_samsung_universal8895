@@ -3444,6 +3444,9 @@
 			abox = <&abox>;
 			id = <0>;
 			type = "normal";
+			pm_qos_lit = <949000 949000 0>; /* SUHQA UHQA NORMAL */
+			pm_qos_big = <741000 741000 0>; /* SUHQA UHQA NORMAL */
+			pm_qos_hmp = <1 1 0>; /* SUHQA UHQA NORMAL */
 		};
 
 		abox_rdma_1: abox_rdma@0x13E51100 {
@@ -3452,6 +3455,9 @@
 			abox = <&abox>;
 			id = <1>;
 			type = "normal";
+			pm_qos_lit = <598000 598000 0>; /* SUHQA UHQA NORMAL */
+			pm_qos_big = <741000 741000 0>; /* SUHQA UHQA NORMAL */
+			pm_qos_hmp = <1 1 0>; /* SUHQA UHQA NORMAL */
 		};
 
 		abox_rdma_2: abox_rdma@0x13E51200 {
@@ -3460,6 +3466,9 @@
 			abox = <&abox>;
 			id = <2>;
 			type = "normal";
+			pm_qos_lit = <598000 598000 0>; /* SUHQA UHQA NORMAL */
+			pm_qos_big = <741000 741000 0>; /* SUHQA UHQA NORMAL */
+			pm_qos_hmp = <1 1 0>; /* SUHQA UHQA NORMAL */
 		};
 
 		abox_rdma_3: abox_rdma@0x13E51300 {
