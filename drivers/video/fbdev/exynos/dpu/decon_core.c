@@ -46,7 +46,19 @@
 #include "dpp.h"
 #include "displayport.h"
 
-int decon_log_level = 0;
+#ifdef CONFIG_CPU_FREQ_SUSPEND
+extern void set_suspend_cpufreq(void);
+#endif
+
+#ifdef CONFIG_PM_DEVFREQ
+extern void set_devfreq_mif_pm_qos(void);
+extern void set_devfreq_disp_pm_qos(void);
+extern void set_devfreq_int_pm_qos(void);
+#endif
+
+bool is_suspend = false;
+
+int decon_log_level = 4;
 module_param(decon_log_level, int, 0644);
 unsigned long afbc_buf_data[DPU_FRM_CNT][2][BUF_DUMP_SIZE];
 struct decon_device *decon_drvdata[MAX_DECON_CNT];
@@ -957,6 +969,22 @@ static int decon_blank(int blank_mode, struct fb_info *info)
 blank_exit:
 	decon_hiber_unblock(decon);
 	decon_info("%s -\n", __func__);
+
+	if (blank_mode == FB_BLANK_UNBLANK)
+		is_suspend = false;
+	else
+		is_suspend = true;
+
+#ifdef CONFIG_CPU_FREQ_SUSPEND
+	set_suspend_cpufreq();
+#endif
+
+#ifdef CONFIG_PM_DEVFREQ
+	set_devfreq_mif_pm_qos();
+	set_devfreq_disp_pm_qos();
+	set_devfreq_int_pm_qos();
+#endif
+
 	return ret;
 }
 
