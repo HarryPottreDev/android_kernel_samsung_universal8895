@@ -119,6 +119,9 @@ void ion_page_pool_free(struct ion_page_pool *pool, struct page *page)
 	 *
 	 * BUG_ON(pool->order != compound_order(page));
 	 */
+#ifndef CONFIG_ION_RBIN_HEAP
+	BUG_ON(pool->order != compound_order(page));
+#endif
 
 	ret = ion_page_pool_add(pool, page);
 	if (ret)
