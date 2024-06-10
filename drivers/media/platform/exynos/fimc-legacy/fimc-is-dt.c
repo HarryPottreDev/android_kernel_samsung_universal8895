@@ -222,6 +222,7 @@ int fimc_is_parse_dt(struct platform_device *pdev)
 	struct device *dev;
 	struct device_node *dvfs_np = NULL;
 	struct device_node *vender_np = NULL;
+	struct device_node *sensor_cmn_np = NULL;
 	struct device_node *np;
 
 	BUG_ON(!pdev);
@@ -253,6 +254,12 @@ int fimc_is_parse_dt(struct platform_device *pdev)
 
 	of_property_read_u32(np, "chain_config", &core->chain_config);
 	probe_info("FIMC-IS chain configuration: %d", core->chain_config);
+
+	sensor_cmn_np = of_find_node_by_name(np, "sensor_common_cfg");
+	if (sensor_cmn_np)
+		core->use_csi_dma_split = of_property_read_bool(sensor_cmn_np, "use_csi_dma_split");
+
+	probe_info("FIMC-IS CSIS DMA split: %d", core->use_csi_dma_split);
 
 	vender_np = of_find_node_by_name(np, "vender");
 	if (vender_np) {
@@ -789,7 +796,6 @@ int fimc_is_module_parse_dt(struct device *dev,
 		}
 	}
 
-
 	pdata->pinctrl = devm_pinctrl_get(dev);
 	if (IS_ERR(pdata->pinctrl)) {
 		probe_err("devm_pinctrl_get is fail");
@@ -815,6 +821,7 @@ p_err:
 	return ret;
 }
 
+#ifdef CONFIG_SPI
 int fimc_is_spi_parse_dt(struct fimc_is_spi *spi)
 {
 	int ret = 0;
@@ -900,6 +907,7 @@ int fimc_is_spi_parse_dt(struct fimc_is_spi *spi)
 p_err:
 	return ret;
 }
+#endif
 #else
 struct exynos_platform_fimc_is *fimc_is_parse_dt(struct device *dev)
 {
