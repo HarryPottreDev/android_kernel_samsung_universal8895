@@ -27,6 +27,7 @@
 #include <linux/slab.h>
 #include <linux/cpu.h>
 #include <linux/gpu_cooling.h>
+#include <linux/throttle_limit.h>
 #include <soc/samsung/tmu.h>
 #include <trace/events/thermal.h>
 
@@ -541,6 +542,20 @@ static int gpufreq_apply_cooling(struct gpufreq_cooling_device *gpufreq_device,
 
 	gpufreq_device->gpufreq_state = cooling_state;
 
+	gpu_cooling_freq = gpufreq_cooling_get_freq(0, gpufreq_device->gpufreq_state);
+
+	if (gpu_cooling_freq < gpu_throttle_limit)
+			gpu_cooling_freq = gpu_throttle_limit;
+
+	if (gpu_cooling_freq == THERMAL_CFREQ_INVALID) {
+		pr_warn("Failed to convert %lu gpu_level\n",
+				     gpufreq_device->gpufreq_state);
+		return -EINVAL;
+	}
+
+#if !defined(CONFIG_SOC_EXYNOS7885_ANDROID_VERSION_P)
+	gpu_cooling_freq = gpu_cooling_freq / 1000;
+#endif
 #if defined(CONFIG_SEC_DEBUG_HW_PARAM)
 	curr_time[tid] = ktime_to_ns(ktime_get()) / 1000000;
 	if (last_time[tid]) {
