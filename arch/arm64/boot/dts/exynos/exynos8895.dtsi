@@ -192,9 +192,9 @@
 			semiboost_down_threshold = <163>;
 			bootboost-duration-us = <40000000>;
 			down_compensation_timeout = <30>;               /* ms */
-			down_compensation_high_freq = <1248000>;        /* min qos lock for little cpu */
-			down_compensation_mid_freq = <1053000>;          /* min qos lock for little cpu */
-			down_compensation_low_freq = <832000>;          /* min qos lock for little cpu */
+			down_compensation_high_freq = <455000>;        /* min qos lock for little cpu */
+			down_compensation_mid_freq = <455000>;          /* min qos lock for little cpu */
+			down_compensation_low_freq = <455000>;          /* min qos lock for little cpu */
 			hmp_up_compst_ratio = <512>;
 			hmp_down_compst_ratio = <2048>;
 			little-id = <1>;
@@ -805,8 +805,8 @@
 		gpu_max_clock = <546000>;
 		gpu_max_clock_limit = <546000>;
 		gpu_min_clock = <260000>;
-		gpu_dvfs_start_clock = <260000>;
-		gpu_dvfs_bl_config_clock = <260000>;
+		gpu_dvfs_start_clock = <546000>;
+		gpu_dvfs_bl_config_clock = <546000>;
 		gpu_default_voltage = <800000>;
 		gpu_cold_minimum_vol = <0>;
 		gpu_voltage_offset_margin = <37500>;
@@ -826,13 +826,13 @@
 		gpu_pmqos_int_disable = <1>;
 		gpu_pmqos_mif_max_clock = <1794000>;
 		gpu_pmqos_mif_max_clock_base = <546000>;
-		gpu_cl_dvfs_start_base = <455000>;
+		gpu_cl_dvfs_start_base = <546000>;
 		gpu_debug_level = <3>; /*DEBUG(1) INFO(2) WARNING(3) ERROR(4)*/
 		gpu_trace_level = <8>; /*TRACE_ALL*/
-		gpu_mo_min_clock = <455000>;
+		gpu_mo_min_clock = <546000>;
 		gpu_boost_gpu_min_lock = <0>;
 		gpu_boost_egl_min_lock = <1872000>;
-		gpu_vk_boost_max_lock = <338000>;
+		gpu_vk_boost_max_lock = <455000>;
 		gpu_vk_boost_mif_min_lock = <1794000>;
 		gpu_bts_support = <1>;
 		gpu_asv_cali_lock_val = <546000>; /*Should check this value when MALI_ASV_CALIBRATION_SUPPORT is enabled*/
@@ -4888,15 +4888,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1066000>;
+			input_booster,cpu_freqs = <741000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
 			input_booster,int_freqs = <0>;
 
 			/* Time table */
-			input_booster,head_times = <500>;
-			input_booster,tail_times = <500>;
+			input_booster,head_times = <0>;
+			input_booster,tail_times = <0>;
 			input_booster,phase_times = <0>;
 		};
 		booster_key@2 {
@@ -4907,7 +4907,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1066000>;
+			input_booster,cpu_freqs = <741000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
@@ -4915,7 +4915,7 @@
 
 			/* Time table */
 			input_booster,head_times = <0>;
-			input_booster,tail_times = <200>;
+			input_booster,tail_times = <0>;
 			input_booster,phase_times = <0>;
 		};
 		booster_key@3 {
@@ -4926,15 +4926,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head, 2_Head, 2_Tail */
-			input_booster,cpu_freqs = <1066000 1066000 858000>;
+			input_booster,cpu_freqs = <741000 741000 741000>;
 			input_booster,hmp_boost = <1 1 1>;
-			input_booster,kfc_freqs = <832000 832000 832000>;
+			input_booster,kfc_freqs = <455000 455000 455000>;
 			input_booster,mif_freqs = <0 0 0>;
 			input_booster,int_freqs = <0 0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 130 0>;
-			input_booster,tail_times = <0 0 500>;
+			input_booster,head_times = <0 0 0>;
+			input_booster,tail_times = <0 0 0>;
 			input_booster,phase_times = <0 0 0>;
 		};
 		booster_key@4 { // Input Booster +
@@ -4945,9 +4945,9 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1066000 858000>;
+			input_booster,cpu_freqs = <741000 741000>;
 			input_booster,hmp_boost = <1 1>;
-			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,kfc_freqs = <455000 455000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
@@ -4964,14 +4964,14 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1066000 1066000>;
+			input_booster,cpu_freqs = <741000 741000>;
 			input_booster,hmp_boost = <1 1>;
-			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,kfc_freqs = <455000 455000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 130>;
+			input_booster,head_times = <0 0>;
 			input_booster,tail_times = <0 0>;
 			input_booster,phase_times = <0 0>;
 		};
@@ -4983,15 +4983,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1066000 858000>;
+			input_booster,cpu_freqs = <741000 741000>;
 			input_booster,hmp_boost = <1 1>;
-			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,kfc_freqs = <455000 455000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 0>;
-			input_booster,tail_times = <0 500>;
+			input_booster,head_times = <0 0>;
+			input_booster,tail_times = <0 0>;
 			input_booster,phase_times = <0 0>;
 		};
 		booster_key@7 {
@@ -5002,14 +5002,14 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1066000 0>;
+			input_booster,cpu_freqs = <741000 0>;
 			input_booster,hmp_boost = <1 0>;
-			input_booster,kfc_freqs = <832000 0>;
+			input_booster,kfc_freqs = <455000 0>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 0>;
+			input_booster,head_times = <0 0>;
 			input_booster,tail_times = <0 0>;
 			input_booster,phase_times = <0 0>;
 		};
@@ -5021,15 +5021,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1066000 858000>;
+			input_booster,cpu_freqs = <741000 741000>;
 			input_booster,hmp_boost = <1 1>;
-			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,kfc_freqs = <455000 455000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 0>;
-			input_booster,tail_times = <0 500>;
+			input_booster,head_times = <0 0>;
+			input_booster,tail_times = <0 0>;
 			input_booster,phase_times = <0 0>;
 		};
 		booster_key@9 {
@@ -5040,14 +5040,14 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1469000 858000>;
+			input_booster,cpu_freqs = <741000 741000>;
 			input_booster,hmp_boost = <1 1>;
-			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,kfc_freqs = <455000 455000>;
 			input_booster,bimc_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <200 0>;
-			input_booster,tail_times = <0 600>;
+			input_booster,head_times = <0 0>;
+			input_booster,tail_times = <0 0>;
 		};
 		booster_key@10 {
 			input_booster,label = "KEY_TWO";
@@ -5057,15 +5057,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1469000>;
+			input_booster,cpu_freqs = <741000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
 			input_booster,int_freqs = <0>;
 
 			/* Time table */
-			input_booster,head_times = <700>;
-			input_booster,tail_times = <700>;
+			input_booster,head_times = <0>;
+			input_booster,tail_times = <0>;
 			input_booster,phase_times = <0>;
 		}; // Input Booster -
 		/* If you need to add new key type, add it this position */
