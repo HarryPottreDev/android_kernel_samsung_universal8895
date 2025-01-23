@@ -111,9 +111,6 @@ typedef union {
 	unsigned long long table[LZ4_STREAMSIZE_U64];
 	LZ4_stream_t_internal internal_donotuse;
 } LZ4_stream_t;
- */
-#define LZ4_MEM_COMPRESS	(32768)
-#define LZ4HC_MEM_COMPRESS	(262144 + (2 * sizeof(unsigned char *)))
 
 /*
  * LZ4_streamHC_t - information structure to track an LZ4HC stream.
