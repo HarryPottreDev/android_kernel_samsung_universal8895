@@ -712,8 +712,7 @@ static ssize_t store_##file_name					\
 	return ret ? ret : count;					\
 }
 
-store_one(scaling_min_freq, min);
-store_one(scaling_max_freq, max);
+
 
 /**
  * show_cpuinfo_cur_freq - current CPU frequency as detected by hardware
