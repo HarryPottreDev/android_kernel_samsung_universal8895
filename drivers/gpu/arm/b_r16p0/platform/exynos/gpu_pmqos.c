@@ -115,11 +115,10 @@ int gpu_pm_qos_command(struct exynos_context *platform, gpu_pmqos_state state)
 #ifdef CONFIG_MALI_VK_BOOST /* VK JOB Boost */
 		mutex_lock(&platform->gpu_sched_hmp_lock);
 		mutex_lock(&platform->gpu_vk_boost_lock);
-		if ((platform->ctx_need_qos || platform->ctx_vk_need_qos || (platform->env_data.utilization == 100)) && (!gpu_pmqos_ongoing)) {
-#if defined(CONFIG_HMP_VARIABLE_SCALE)
-			set_hmp_boost(1);
-			set_hmp_aggressive_up_migration(true);
-			set_hmp_aggressive_yield(true);
+		if (platform->ctx_vk_need_qos && platform->max_lock == platform->gpu_vk_boost_max_clk_lock) {
+			pm_qos_update_request(&exynos5_g3d_mif_min_qos, platform->gpu_vk_boost_mif_min_clk_lock);
+		}
+		mutex_unlock(&platform->gpu_vk_boost_lock);
 #endif
 		pm_qos_update_request(&exynos5_g3d_cpu_cluster0_min_qos, platform->table[platform->step].cpu_little_min_freq);
 
@@ -159,18 +158,19 @@ int gpu_pm_qos_command(struct exynos_context *platform, gpu_pmqos_state state)
 			GPU_LOG(DVFS_ERROR, DUMMY, 0u, 0u, "%s: PM QOS ERROR : pm_qos deinit -> reset\n", __func__);
 			return -ENOENT;
 		}
-		mutex_lock(&platform->gpu_sched_hmp_lock);
-		mutex_lock(&platform->gpu_vk_boost_lock);
-		if (!platform->ctx_need_qos && !platform->ctx_vk_need_qos && (platform->env_data.utilization < 100) && gpu_pmqos_ongoing) {
-			gpu_dvfs_boost_lock(GPU_DVFS_BOOST_UNSET);
-			pm_qos_update_request(&exynos5_g3d_mif_min_qos, 0);
-			pm_qos_update_request(&exynos5_g3d_cpu_cluster0_min_qos, 0);
-			pm_qos_update_request(&exynos5_g3d_cpu_cluster1_min_qos, 0);
-#ifdef CONFIG_HMP_VARIABLE_SCALE
-			/* unset hmp boost */
-			set_hmp_boost(0);
-			set_hmp_aggressive_up_migration(false);
-			set_hmp_aggressive_yield(false);
+		pm_qos_update_request(&exynos5_g3d_mif_min_qos, 0);
+		if (platform->pmqos_mif_max_clock)
+			pm_qos_update_request(&exynos5_g3d_mif_max_qos, PM_QOS_BUS_THROUGHPUT_MAX_DEFAULT_VALUE);
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster0_min_qos, 0);
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster1_max_qos, PM_QOS_CLUSTER1_FREQ_MAX_DEFAULT_VALUE);
+#if PM_QOS_CPU_CLUSTER_NUM == 3
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster1_min_qos, 0);
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster2_max_qos, PM_QOS_CLUSTER2_FREQ_MAX_DEFAULT_VALUE);
+#ifdef CONFIG_MALI_SUSTAINABLE_OPT
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster0_max_qos, PM_QOS_CLUSTER0_FREQ_MAX_DEFAULT_VALUE);
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster1_max_qos, PM_QOS_CLUSTER1_FREQ_MAX_DEFAULT_VALUE);
+		pm_qos_update_request(&exynos5_g3d_cpu_cluster2_max_qos, PM_QOS_CLUSTER2_FREQ_MAX_DEFAULT_VALUE);
+#endif
 #endif
 			gpu_pmqos_ongoing = false;
 		}
