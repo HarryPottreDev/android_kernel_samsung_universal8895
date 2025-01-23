@@ -86,13 +86,6 @@ static void update_mask_value(void __iomem *sfr,
 #define CALLIOPE_ENABLE_TIMEOUT_MS	(1000)
 #define BOOT_DONE_TIMEOUT_MS		(10000)
 
-static unsigned int audio_pm_qos_lit = 832000;
-static unsigned int audio_pm_qos_big = 741000;
-static unsigned int current_lit_freq_id = 0;
-static unsigned int current_big_freq_id = 0;
-static bool boost_ongoing_lit = false;
-static bool boost_ongoing_big = false;
-
 /* For only external static functions */
 static struct abox_data *p_abox_data;
 
