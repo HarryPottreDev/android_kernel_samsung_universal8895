@@ -89,6 +89,5 @@
 			compatible = "exynos,gnss_if";
 			reg = <0x0 0xFFC00000 0x400000>;
 		};
-
 	};
 };
